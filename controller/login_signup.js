@@ -6,13 +6,14 @@ const multer  = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
 module.exports.user = async(req,res) =>{
-    const {password,name} = req.body;
-    console.log(password, name);
+    const {password, name, email} = req.body;
+
     try{
         const createdUser = await prisma.Admin.create({
             data:{
                 name,
                 Password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
+                email,
             }
         });
         res.status(200).json({

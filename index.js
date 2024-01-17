@@ -21,14 +21,8 @@ app.use('/get', (req, res) => {
     const data = { message: "data" };
     res.json(data);
 });
-app.use(bodyParser.urlencoded({ extended: true }))
-
+app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
-app.use(bodyParser.json())
-app.post("/upload", upload.single("myFile"), (req, res) => {
-  console.log("Body: ", req.body);
-  console.log("File: ", req.file);
-  res.send("File successfully uploaded.");
-});
+app.use(bodyParser.json());
 
 app.use('/', routes);
