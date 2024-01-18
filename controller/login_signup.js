@@ -2,9 +2,18 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const multer  = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.user,
+      pass: 'aofvbrjqrslzbavz'
+    }
+  });
+  
 module.exports.create_admin = async(req,res) =>{
     const {password, name, email} = req.body;
     try{
@@ -68,7 +77,6 @@ module.exports.authorize = async(req,res,next)=>{
         })
     }
 }
-
 module.exports.assignTeacher = async(req,res)=>{
     const {teacherEmail, studentEmail} = req.body;
     try{
@@ -77,7 +85,11 @@ module.exports.assignTeacher = async(req,res)=>{
                 email: teacherEmail
             }
         });
-        if(teacher) helper_assigner(teacher,studentEmail,res);
+        if(teacher) {
+            console.log("teacher",teacher);
+            console.log("studentEmail",studentEmail);
+            helper_assigner(teacher,studentEmail,res);
+        }
         else{
             res
             .status(400);
@@ -96,8 +108,22 @@ const helper_assigner = async(teacher,studentEmail,res)=>{
               teacher_id: teacher.id,
             }
         })
-        console.log(student);
-        console.log(teacher);
+        console.log("student",student);
+        console.log("")
+        const mailOptions = {
+            from: process.env.user,
+            to: teacher.email,
+            subject: 'New student assigned.',
+            text: 'Hi ' + `${teacher.name}` +', you have been assigned a new student: '+ `${student.name}`
+          };
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          })
         res
         .status(200)
         .json({message:'teacher asssigned to student,student.name'})  
