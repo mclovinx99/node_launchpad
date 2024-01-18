@@ -57,9 +57,8 @@ module.exports.authorize = async(req,res,next)=>{
         jwt.verify(token,'se3ret',(decoded,err)=>{
             if(decoded)
             {
-                res
-                .status(200)
-                .next();
+                res.locals.user = decoded.email;
+                next();
             }
             else{
                 res
@@ -70,17 +69,39 @@ module.exports.authorize = async(req,res,next)=>{
     }
 }
 
-module.exports.upload =  (req,res)=>{
+module.exports.assignTeacher = async(req,res)=>{
+    const {teacherEmail, studentEmail} = req.body;
     try{
-            upload.single("myFile")(req,res,(err)=>{
-                if(err){
-                    console.log(err);
-                }
-                res
-                .status(200)
-                .json({message:"File uploaded"});
-            });
-    } catch(err){
-        console.log(err);
+        const teacher = await prisma.Teacher.findUnique({
+            where: {
+                email: teacherEmail
+            }
+        });
+        if(teacher) helper_assigner(teacher,studentEmail,res);
+        else{
+            res
+            .status(400);
+        }
+    }catch(err){
+        console.log("err" +err);
+    }
+}
+const helper_assigner = async(teacher,studentEmail,res)=>{
+    try{
+        const student = await prisma.StudentsProfile.update({
+            where: {
+              email: studentEmail,
+            },
+            data: {
+              teacher_id: teacher.id,
+            }
+        })
+        console.log(student);
+        console.log(teacher);
+        res
+        .status(200)
+        .json({message:'teacher asssigned to student,student.name'})  
+    }catch(err){
+        console.log("err" +err);
     }
 }

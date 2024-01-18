@@ -68,7 +68,24 @@ async function main() {
 
   console.log({ nupur, anita})
 }
-main()
+async function secondSeed(){
+    const riya = await prisma.Teacher.upsert({
+        where: { email: 'riya@gmail.com' },
+        update: {},
+        create: {
+            email: 'riya@gmail.com',
+            name: 'riya',
+            address: 'Noida, sector 1',
+            picture:'selfie.jpg',
+            current_school:'XYZ',
+            previous_school:'PQR',
+            experience:'2 years',
+            expertise:'English'
+        }
+    })
+    console.log({riya})
+}
+secondSeed()
   .then(async () => {
     await prisma.$disconnect()
   })

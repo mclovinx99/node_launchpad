@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+// parse application/json
 
 const routes = require('./routes');
 const path = require('path');
@@ -21,8 +24,5 @@ app.use('/get', (req, res) => {
     const data = { message: "data" };
     res.json(data);
 });
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
 
 app.use('/', routes);
