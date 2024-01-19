@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const scheduler = require('./data/cron_job')
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 // parse application/json
+app.use(bodyParser.json());
+
 
 const routes = require('./routes');
 const path = require('path');
@@ -24,5 +26,4 @@ app.use('/get', (req, res) => {
     const data = { message: "data" };
     res.json(data);
 });
-
 app.use('/', routes);

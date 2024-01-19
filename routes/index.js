@@ -1,9 +1,10 @@
 const express = require('express');
 const Router = express.Router();
-const add_user = require('../controller/login_signup');
+const add_user = require('../controller/admin_controller');
 const add_student = require('../controller/students_controller');
 const add_teacher = require('../controller/teachers_controller');
 
+//admin routes
 Router
 .route('/create')
 .post(add_user.create_admin);
@@ -17,6 +18,20 @@ Router
 .post(add_user.assignTeacher);
 
 Router
+.route('/verifyStudent')
+.post(add_user.verifyStudent);
+
+Router
+.route('/verifyTeacher')
+.post(add_user.verifyTeacher);
+
+Router
+.route('/getList')
+.get(add_user.unverifiedList);
+
+
+//students route
+Router
 .route('/studentSignup')
 .post(add_student.create_password);
 
@@ -28,6 +43,8 @@ Router
 .route('/createStudent')
 .post(add_student.authorize,add_student.create_student);
 
+
+//teachers route
 Router
 .route('/teacherSignup')
 .post(add_teacher.create_password);
@@ -51,4 +68,5 @@ Router
 Router
 .route('/deleteTeacher')
 .delete(add_teacher.deleteTeacher);
+
 module.exports = Router;
