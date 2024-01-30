@@ -5,23 +5,16 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.user,
-        pass: 'aofvbrjqrslzbavz'
+        pass: process.env.user
     }
 });
 
 
 const sendMail = (students,teachers) => {
-    students.map((student)=>{
-        console.log(student.name);
-    })
-    teachers.map((teacher)=>{
-        console.log(teacher.name);
-    })
     const mailOptions = {
         from: process.env.user,
-        to: 'aditya.rathi.hestabit@gmail.com',
+        to: 'aditya.rathi.hestabit@gmail.com', //admin hardcorded for test
         subject: 'Alert! Unverified entires in database.',
-        // text: `${students}${teachers}`
         html: mailBody(teachers,students)
     };
 

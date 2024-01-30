@@ -6,16 +6,18 @@ const nodemailer = require('nodemailer');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const mailbody = require('../mails/genericMail');
+const verifactionMail = require('../mails/verificationMail');
 
 
-
+//configure nodemailer
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.user,
-        pass: 'aofvbrjqrslzbavz'
+        pass: process.env.pass
     }
 });
+
 
 module.exports.create_admin = async (req, res) => {
     const { password, name, email } = req.body;
@@ -47,7 +49,7 @@ module.exports.login = async (req, res) => {
         });
         console.log(user);
         if (bcrypt.compareSync(user && password, user.Password)) {
-            const token = jwt.sign({ name: user.name }, 'se3ret', { expiresIn: 3600 })
+            const token = jwt.sign({ email: user.email }, 'se3ret', { expiresIn: 3600 })
             res
                 .status(200)
                 .json({ message: 'user found', token: token });
@@ -62,8 +64,9 @@ module.exports.login = async (req, res) => {
     }
 }
 
+
 module.exports.authorize = async (req, res, next) => {
-    var headerExist = req.header.authorization;
+    var headerExist = req.headers.authorization;
     if (headerExist) {
         let token = headerExist.split('.');
         jwt.verify(token, 'se3ret', (decoded, err) => {
@@ -78,11 +81,16 @@ module.exports.authorize = async (req, res, next) => {
             }
         })
     }
+    else {
+        res
+            .status(401)
+            .json({ message: "No token provided" });
+    }
 }
+
 module.exports.assignTeacher = async (req, res) => {
     const { teacherEmail, studentEmail } = req.body;
     try {
-        // const teacher= TeacherModel.findByMail(email);    
         const teacher = await prisma.Teacher.findUnique({
             where: {
                 email: teacherEmail
@@ -101,6 +109,8 @@ module.exports.assignTeacher = async (req, res) => {
         console.log("err" + err);
     }
 }
+
+//helper assigner function
 const helper_assigner = async (teacher, studentEmail, res) => {
     try {
         const student = await prisma.StudentsProfile.update({
@@ -119,6 +129,7 @@ const helper_assigner = async (teacher, studentEmail, res) => {
         console.log("err" + err);
     }
 }
+
 module.exports.verifyStudent = async (req, res) => {
     const { studentEmail } = req.body;
     try {
@@ -140,6 +151,7 @@ module.exports.verifyStudent = async (req, res) => {
         console.log(err)
     }
 }
+
 module.exports.verifyTeacher = async (req, res) => {
     const { teacherEmail } = req.body;
     try {
@@ -156,6 +168,7 @@ module.exports.verifyTeacher = async (req, res) => {
             .json({ message: 'teacher verified' });
         verificationMail(teacher);
     } catch (err) {
+        console.log(err)
         res
             .status(400)
             .json(err);
@@ -178,12 +191,11 @@ module.exports.unverifiedList = async (req, res) => {
         teacher = teachers;
         student = students;
         res
-        .status(200);
+            .status(200);
     }
     catch (err) {
         console.log(err);
     }
-    return {teacher,student};
 }
 
 //helper function for mailing verification
@@ -192,7 +204,7 @@ const verificationMail = (role) => {
         from: process.env.user,
         to: role.email,
         subject: 'You have been verified!',
-        text: 'Hi you been verified.'
+        html: verificationMail
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -210,8 +222,7 @@ const assignedMail = (teacher, student) => {
         from: process.env.user,
         to: teacher.email,
         subject: 'New student assigned.',
-        // text: 'Hi ' + `${teacher.name}` +', you have been assigned a new student: '+ `${student.name}`
-        html: mailbody(teacher,student)
+        html: mailbody(teacher, student)
     };
 
     transporter.sendMail(mailOptions, function (error, info) {

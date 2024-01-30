@@ -1,10 +1,10 @@
-const mailbody = (teachers,students) =>{
-    
+const mailbody = (Teacher,student) =>{
     return `<!doctype html>
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     
     <head>
         <title>
+    
         </title>
         <!--[if !mso]><!-- -->
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -200,27 +200,10 @@ const mailbody = (teachers,students) =>{
                                             <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
     
                                                 <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:22px;text-align:left;color:#555;">
-                                                    You have not verified these Students:
-                                                    
-                                                        ${students.map((student)=>{
-                                                        return `<ul>
-                                                                    <li>${student.name}</li>
-                                                                </ul>`
-                                                        })}
-                                                    
-                                                    <br></br>
-                                                </div> 
-                                                <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:22px;text-align:left;color:#555;">
-                                                You have not verified these Teachers:
-                                                
-                                                    ${teachers.map((teacher)=>{
-                                                    return `<ul>
-                                                                <li>${teacher.name}</li>
-                                                            </ul>`
-                                                    })}
-                                                
-                                                <br></br>
-                                            </div>   
+                                                    Hello ${Teacher.name}!<br></br>
+                                                    You have been assigned a new student : ${student.name}.
+                                                </div>
+    
                                             </td>
                                         </tr>
     
@@ -344,4 +327,7 @@ const mailbody = (teachers,students) =>{
     </body>
     </html>`
 }
-module.exports= mailbody;
+
+module.exports = mailbody;
+
+

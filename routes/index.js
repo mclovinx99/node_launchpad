@@ -13,21 +13,22 @@ Router
 .route('/login')
 .post(add_user.login);
 
+//middlewear for auth
 Router
 .route('/assignTeacher')
-.post(add_user.assignTeacher);
+.post(add_user.authorize, add_user.assignTeacher);
 
 Router
 .route('/verifyStudent')
-.post(add_user.verifyStudent);
+.post(add_user.authorize, add_user.verifyStudent);
 
 Router
 .route('/verifyTeacher')
-.post(add_user.verifyTeacher);
+.post(add_user.authorize,add_user.verifyTeacher);
 
 Router
 .route('/getList')
-.get(add_user.unverifiedList);
+.get(add_user.authorize, add_user.unverifiedList);
 
 
 //students route
@@ -44,6 +45,7 @@ Router
 .post(add_student.authorize,add_student.create_student);
 
 
+
 //teachers route
 Router
 .route('/teacherSignup')
@@ -53,9 +55,11 @@ Router
 .route('/teacherLogin')
 .post(add_teacher.login);
 
+
+//removing auth for ui test
 Router
 .route('/createTeacher')
-.post(add_teacher.authorize,add_teacher.create_teacher);
+.post(add_teacher.create_teacher);
 
 Router
 .route('/getTeachers')
@@ -63,10 +67,20 @@ Router
 
 Router
 .route('/updateTeachers')
-.put(add_teacher.updateDetails);
+.post(add_teacher.authorize,add_teacher.updateDetails);
 
 Router
 .route('/deleteTeacher')
-.delete(add_teacher.deleteTeacher);
+.post(add_teacher.authorize,add_teacher.deleteTeacher);
+
+Router
+.route('/OTPTeacher')
+.post(add_teacher.verifyOTP);
+
+Router
+.route('/getTeacher')
+.post(add_teacher.getTeacher);
+
+
 
 module.exports = Router;
