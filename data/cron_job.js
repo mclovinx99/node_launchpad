@@ -7,7 +7,6 @@ const offloader = require('./offloader')
 
 // Schedule the cron job to run every minute
 const schedule = cron.schedule('*/1 */1 * * *', async() => {
-    logMessage();
     try {
         const teachers = await prisma.Teacher.findMany({
             where: {
